@@ -17,6 +17,7 @@ function MathText({children, block = false}) {
 
 const figures = {
   world: ['huh-world', 'A world Z, shown as a red sphere beside a blue cone, gives rise to an image X and a text description Y. Each modality has its own encoder.', 'Huh et al. · Figure 1', PRH + '#page=1'],
+  alignment: ['huh-alignment', 'On Wikipedia image–caption pairs, nearest-neighbor overlap with DINOv2 generally rises with language-model performance. Smaller panels compare MAE, ImageNet, and CLIP vision encoders.', 'Huh et al. · Figure 3', PRH + '#page=4'],
   overview: ['jepa-overview', 'The same scene supplies two photos to an image JEPA and two captions to a text JEPA. The two learned spaces are compared across modalities. At right, alignment is plotted against training draws.', 'Balestriero & LeCun · Figure 1', JEPA + '#page=1'],
   pairs: ['jepa-pairs', 'Four positive-pair graphs compare good views, weak corruptions, strong corruptions, and next-token prediction.', 'Balestriero & LeCun · Figure 3', JEPA + '#page=6'],
   scale: ['jepa-scale', 'Mutual 10-nearest-neighbor overlap and Flickr retrieval across training scales and reference encoders.', 'Balestriero & LeCun · Figure 9', JEPA + '#page=10'],
@@ -61,15 +62,19 @@ const slides = [
         <Point title="What the geometry enables">Fit one map to connect independently trained encoders for captioning, or infer a map from two disjoint embedding pools without matched image–caption examples.</Point>
       </div><Source href={JEPA + '#page=1'}>Randall Balestriero and Yann LeCun · Abstract</Source>
     </>},
-  {topic:'Original hypothesis', title:'What is the PRH?',
-    lead:'Different observations of the same world may lead independently trained models toward a shared statistical representation of it.',
+  {topic:'Original hypothesis', title:'Do vision and language models agree?',
+    lead:'Take a photo and its caption. Do their ten nearest neighbors point to the same Wikipedia examples?',
     body: ({zoom}) => <div className="split origins">
       <div><p className="byline"><strong>Minyoung Huh, Brian Cheung, Tongzhou Wang, and Phillip Isola</strong><br/>ICML 2024</p>
-        <Point title="One world, different observations">In the figure, <MathText>Z</MathText> is the underlying scene, <MathText>X</MathText> an image, and <MathText>Y</MathText> a text description. Image and text encode different parts of what is happening.</Point>
-        <Point title="What convergence would look like">Imagine three scenes. If an image model places a red sphere and blue cone closer to a similar scene than to a street scene, a text model would tend to make the same comparison from the descriptions.</Point>
-        <Point title="Why scale might help">Larger models and more diverse data and tasks may favor representations that reuse the underlying structure. Huh et al. observed growing agreement in nearest neighbors for the tested image and language models.</Point>
+        <Point title="The test">Encode 1,024 Wikipedia image–caption pairs with existing models. Find each item’s ten nearest neighbors in each space, then count the overlap. The pairs match items for evaluation.</Point>
+        <Point title="The result">Better language models generally agreed more with vision models. In the DINOv2 comparison, overlap reached about <strong>0.16 out of 1.0</strong>. In a separate test of 78 vision models, better transfer performance also went with greater agreement.</Point>
+        <Point title="The hypothesis">Images and captions reveal different aspects of one world. Huh et al. conjectured that greater model capacity and more diverse data and tasks could drive models toward a shared statistical representation of that world.</Point>
+        <p className="note">When does greater agreement become a guarantee of shared geometry?</p>
         <Source href="https://proceedings.mlr.press/v235/huh24a.html">Original PRH position paper</Source>
-      </div><Figure id="world" zoom={zoom} className="world"/>
+      </div><div className="origin-figures">
+        <Figure id="alignment" zoom={zoom}/>
+        <Figure id="world" zoom={zoom} className="world"/>
+      </div>
     </div>},
   {topic:'Section 2.1', title:'The world, the objective, the theorem',
     lead:'The formal question is when independently trained encoders recover one world embedding up to an orthogonal change of coordinates.',

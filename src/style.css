@@ -114,4 +114,5 @@ h1, .slide-1 h1 { margin: 7px 0 9px; font-size: clamp(1.03rem,4.2vw,3.75rem); wh
 }
 .origin-figures .image-button img { max-height: min(30vh, 325px); }
 .origin-figures .world .image-button img { max-height: min(23vh, 250px); }
+.ijepa-figure .image-button img { max-height: min(57vh, 600px); }
 .experiment-figure .image-button img { max-height: min(25vh,260px); }

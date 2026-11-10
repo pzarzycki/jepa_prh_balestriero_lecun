@@ -8,6 +8,7 @@ const JEPA = 'https://arxiv.org/pdf/2610.39302v1';
 const FER = 'https://arxiv.org/pdf/2505.11581v2';
 const PRH = 'https://arxiv.org/pdf/2405.07987v5';
 const ROSETTA = 'https://arxiv.org/pdf/2610.09411v2';
+const IJEPA = 'https://arxiv.org/pdf/2301.08243';
 const tex = String.raw;
 
 function MathText({children, block = false}) {
@@ -18,6 +19,7 @@ function MathText({children, block = false}) {
 const figures = {
   world: ['huh-world', 'A world Z, shown as a red sphere beside a blue cone, gives rise to an image X and a text description Y. Each modality has its own encoder.', 'Huh et al. · Figure 1', PRH + '#page=1'],
   alignment: ['huh-alignment', 'On Wikipedia image–caption pairs, nearest-neighbor overlap with DINOv2 generally rises with language-model performance. Smaller panels compare MAE, ImageNet, and CLIP vision encoders.', 'Huh et al. · Figure 3', PRH + '#page=4'],
+  ijepa: ['ijepa-architecture', 'I-JEPA encodes visible image patches, predicts the embeddings of three color-coded target regions using their locations, and compares each prediction with the corresponding target encoder output.', 'Assran et al. · I-JEPA, Figure 3', IJEPA + '#page=3'],
   overview: ['jepa-overview', 'The same scene supplies two photos to an image JEPA and two captions to a text JEPA. The two learned spaces are compared across modalities. At right, alignment is plotted against training draws.', 'Balestriero & LeCun · Figure 1', JEPA + '#page=1'],
   pairs: ['jepa-pairs', 'Four positive-pair graphs compare good views, weak corruptions, strong corruptions, and next-token prediction.', 'Balestriero & LeCun · Figure 3', JEPA + '#page=6'],
   scale: ['jepa-scale', 'Mutual 10-nearest-neighbor overlap and Flickr retrieval across training scales and reference encoders.', 'Balestriero & LeCun · Figure 9', JEPA + '#page=10'],
@@ -53,7 +55,7 @@ function Table({columns, rows}) {
 }
 
 const slides = [
-  {topic:'Abstract', title:'Proving and improving the PRH',
+  {hash:'slide-1', topic:'Abstract', title:'Proving and improving the PRH',
     lead:'The Platonic Representation Hypothesis (PRH) conjectures that as models scale, models trained on different modalities converge toward a shared representation of the world.',
     body: ({zoom}) => <><Figure id="overview" zoom={zoom} className="overview"/>
       <div className="theory-grid">
@@ -62,7 +64,7 @@ const slides = [
         <Point title="What the geometry enables">Fit one map to connect independently trained encoders for captioning, or infer a map from two disjoint embedding pools without matched image–caption examples.</Point>
       </div><Source href={JEPA + '#page=1'}>Randall Balestriero and Yann LeCun · Abstract</Source>
     </>},
-  {topic:'Original hypothesis', title:'Do vision and language models agree?',
+  {hash:'slide-2', topic:'Original hypothesis', title:'Do vision and language models agree?',
     lead:'Take a photo and its caption. Do their ten nearest neighbors point to the same Wikipedia examples?',
     body: ({zoom}) => <div className="split origins">
       <div><p className="byline"><strong>Minyoung Huh, Brian Cheung, Tongzhou Wang, and Phillip Isola</strong><br/>ICML 2024</p>
@@ -76,7 +78,17 @@ const slides = [
         <Figure id="world" zoom={zoom} className="world"/>
       </div>
     </div>},
-  {topic:'Section 2.1', title:'The world, the objective, the theorem',
+  {hash:'jepa', topic:'Architecture background', title:'What is a JEPA?',
+    lead:'A Joint-Embedding Predictive Architecture learns to predict the representation of a target from a related context.',
+    body: ({zoom}) => <div className="split">
+      <div>
+        <Point title="Encode what you can see">In I-JEPA, the context encoder reads the visible patches of an image. A target encoder provides the embeddings of the colored target regions.</Point>
+        <Point title="Predict a vector for each target">The predictor gets the context embedding and the target location. Its output is compared with the target encoder’s vector for that region. The training target lives in embedding space.</Point>
+        <Point title="How the PRH paper uses JEPA">Its experiments use LeJEPA. They compare related view embeddings directly, with no learned predictor between them. SIGReg keeps the embeddings from collapsing to a single vector.</Point>
+        <Source href="https://openreview.net/pdf/315d43ba26f55357a84cec9a7ed15a6610094f79.pdf">LeCun’s original proposal (2022)</Source>{' · '}<Source href="https://arxiv.org/abs/2511.08544">LeJEPA (2025)</Source>
+      </div><Figure id="ijepa" zoom={zoom} className="ijepa-figure"/>
+    </div>},
+  {hash:'slide-3', topic:'Section 2.1', title:'The world, the objective, the theorem',
     lead:'The formal question is when independently trained encoders recover one world embedding up to an orthogonal change of coordinates.',
     body: () => <><div className="theory-grid">
       <section className="point notation"><h2>1. Define the world and the data</h2>
@@ -105,7 +117,7 @@ const slides = [
       </section>
     </div><div className="math-panel compact"><MathText block>{tex`\mathcal L_m(f)=\mathbb E_{(z,z')\sim\pi_m}\!\left[\ell\!\left(f(g_m(z)),f(g_m(z'))\right)\right]+\Omega(f)`}</MathText></div>
     <Source href={JEPA + '#page=3'}>Section 2.1 · Equation 1 and Theorem 1</Source></>},
-  {topic:'Sections 2.1–2.3', title:'When positives define the geometry',
+  {hash:'slide-4', topic:'Sections 2.1–2.3', title:'When positives define the geometry',
     lead:'The spectral case proves uniqueness under an eigengap and shows how pair mismatch and observation-specific detail affect alignment.',
     body: ({zoom}) => <><div className="theory-grid">
       <section className="point theorem"><h2>Whitened spectral solution</h2>
@@ -122,7 +134,7 @@ const slides = [
       </section>
     </div><Figure id="pairs" zoom={zoom} className="theory-figure"/>
     <Source href={JEPA + '#page=4'}>Spectral proposition and Theorems 2–4</Source></>},
-  {topic:'Section 2.4', title:'Next-token prediction as a JEPA', lead:'A language model learns which tokens fit a prefix. What does that tell it about the geometry of scenes?',
+  {hash:'slide-5', topic:'Section 2.4', title:'Next-token prediction as a JEPA', lead:'A language model learns which tokens fit a prefix. What does that tell it about the geometry of scenes?',
     body: () => <>
       <div className="theory-grid">
         <Point title="Find the positive pair">The prefix <MathText>c</MathText> and its actual next token <MathText>y</MathText> form the pair. The softmax compares the prefix embedding <MathText>{tex`h(c)`}</MathText> with the target token vector <MathText>{tex`w_y`}</MathText> and the rest of the vocabulary.</Point>
@@ -132,7 +144,7 @@ const slides = [
       <div className="math-panel"><MathText block>{tex`-\log p_\theta(y\mid c)=-\langle h(c),w_y\rangle+\log\sum_v e^{\langle h(c),w_v\rangle}`}</MathText><p>The first term rewards the observed pair. The log-partition normalizes over vocabulary tokens.</p></div>
       <div className="math-panel compact"><MathText block>{tex`h\mapsto Gh,\qquad w_v\mapsto G^{-T}w_v`}</MathText><p>The two changes cancel in every prefix–token dot product.</p></div><Source href={JEPA + '#page=6'}>Section 2.4 · Next-token formulation</Source>
     </>},
-  {topic:'Sections 3–4', title:'Better pairs, stronger alignment', lead:'The two Flickr JEPAs share the caption data, text backbone, LeJEPA loss, trimming, and masking. The source of the views is the variable.',
+  {hash:'slide-6', topic:'Sections 3–4', title:'Better pairs, stronger alignment', lead:'The two Flickr JEPAs share the caption data, text backbone, LeJEPA loss, trimming, and masking. The source of the views is the variable.',
     body: ({zoom}) => <><div className="theory-grid">
       <Point title="Good-view JEPA">Take a contiguous span from each of two captions of the same image. Mask 15% of tokens in each span and bring their embeddings closer.</Point>
       <Point title="Masked-span JEPA · the control">Draw the spans from one caption and apply the same trimming and masking. The loss still brings the span embeddings closer.</Point>
@@ -148,7 +160,7 @@ const slides = [
       <Point title="What the 42× counts">WIT scores of 0.109 after 21.6M good-view draws and 0.111 after 900M next-token draws. That is 14× fewer text tokens, with different batches and corpus coverage.</Point>
     </div>
     <Source href={JEPA + '#page=7'}>Flickr and web-scale protocols</Source></>},
-  {topic:'Section 5.1', title:'Connecting independent encoders', lead:'A map into text-embedding space lets a separately trained decoder read visual features.',
+  {hash:'slide-7', topic:'Section 5.1', title:'Connecting independent encoders', lead:'A map into text-embedding space lets a separately trained decoder read visual features.',
     body: ({zoom}) => <><div className="flow" aria-label="Image to caption pipeline"><span>Image encoder</span><b aria-hidden="true">→</b><span>Fitted map</span><b aria-hidden="true">→</b><span>Text decoder</span></div>
       <Figure id="caption" zoom={zoom} className="wide-figure"/>
       <div className="split">
@@ -156,7 +168,7 @@ const slides = [
         <Point title="Fit just the map on paired data">The strongest configuration maps frozen DINOv2 and DINOv3 features into text space. Fit the map with orthonormal rows on about 30,000 Flickr pairs. The captioner reaches <strong>0.838 CIDEr</strong> on COCO.</Point>
       </div><Source href={JEPA + '#page=13'}>Section 5.1 · Captioning</Source>
     </>},
-  {topic:'Section 5.2 · Related work', title:'Shared geometry as a Rosetta Stone',
+  {hash:'slide-8', topic:'Section 5.2 · Related work', title:'Shared geometry as a Rosetta Stone',
     lead:'Schnaus et al. recover a map between existing encoders. Balestriero and LeCun ask which training views make that map easier to recover.',
     body: ({zoom}) => <div className="split rosetta">
       <div><Figure id="rosetta" zoom={zoom}/>
@@ -174,14 +186,14 @@ const slides = [
         <Source href={JEPA + '#page=14'}>Balestriero &amp; LeCun · §5.2 and Table 4</Source>
       </div>
     </div>},
-  {topic:'Limits', title:'Where the evidence stops', lead:'Exact alignment is a result about an identifiable spectral optimum. The neural experiments measure partial agreement.',
+  {hash:'slide-9', topic:'Limits', title:'Where the evidence stops', lead:'Exact alignment is a result about an identifiable spectral optimum. The neural experiments measure partial agreement.',
     body: ({zoom}) => <div className="split limits"><div>
       <Point title="Proof assumptions">The theorem assumes recoverable states and matched marginals. The practical LeJEPA objective uses SIGReg, a Gaussian regularizer whose uniqueness is outside the proof.</Point>
       <Point title="Data and tuning">Two Recap descriptions per image come from a vision-language teacher. Including the higher-SIGReg run changes mean WIT alignment from <strong>0.184 to 0.168</strong>.</Point>
       <Point title="What the scaling law predicts">Fit Flickr R@1 as a function of good-view fraction, training draws, and unique images. Across 85 new runs, RMSE is 0.0093 versus 0.0096 between seeds. Some much longer runs fall below forecast.</Point>
       <Source href={JEPA + '#page=15'}>Discussion and limitations</Source>
     </div><Figure id="law" zoom={zoom}/></div>},
-  {topic:'FER comparison', title:'Same skull, different training paths', lead:'Kumar, Clune, Lehman, and Stanley compare how an evolved network and a direct gradient fit produce nearly the same image.',
+  {hash:'slide-10', topic:'FER comparison', title:'Same skull, different training paths', lead:'Kumar, Clune, Lehman, and Stanley compare how an evolved network and a direct gradient fit produce nearly the same image.',
     body: ({zoom}) => <><div className="split fer"><Figure id="sweeps" zoom={zoom}/><div>
       <Point title="Two training histories">Picbreeder builds on inherited patterns, including bilateral symmetry. The direct fit starts from randomized weights in the same layered template and minimizes pixel error to the final skull.</Point>
       <Point title="Fracture and entanglement">Fracture means separate computations repeat the same operation across contexts. Entanglement means changing one factor also affects others. Selected evolved weight sweeps give more coherent edits. The comparison varies several training choices together.</Point>
@@ -192,9 +204,7 @@ const slides = [
 ];
 
 function indexFromHash() {
-  const match = /^#slide-(\d+)$/.exec(location.hash);
-  const number = match ? Number(match[1]) : 1;
-  return number >= 1 && number <= slides.length ? number - 1 : 0;
+  return Math.max(0, slides.findIndex(slide => slide.hash === location.hash.slice(1)));
 }
 
 function App() {
@@ -220,7 +230,7 @@ function App() {
   }
 
   function go(i) {
-    if (i >= 0 && i < slides.length && i !== index) location.hash = 'slide-' + (i + 1);
+    if (i >= 0 && i < slides.length && i !== index) location.hash = slides[i].hash;
   }
   useEffect(() => {
     const sync = () => { setIndex(indexFromHash()); window.scrollTo(0, 0); };

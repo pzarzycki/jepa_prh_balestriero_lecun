@@ -109,7 +109,7 @@ const slides = [
           <dt><MathText>{tex`h_m=f_m\circ g_m`}</MathText></dt><dd>Same encoder written as a function of the world state. It lets both losses be expressed on <MathText>{tex`\mathcal Z`}</MathText>.</dd>
         </dl>
       </section>
-      <section className="point theorem"><h2>3. State the guarantee</h2>
+      <section className="point theorem"><h2>Theorem 1 · Platonic representation</h2>
         <p>If all modalities share one <MathText>{tex`\pi`}</MathText> and the resulting world objective has a unique population optimum up to orthogonal transformation, then</p>
         <MathText block>{tex`f_m^\star\circ g_m=Q_m h^\star,\qquad Q_m\in O(k).`}</MathText>
         <p><MathText>{tex`h^\star`}</MathText> is a common optimal world embedding. <MathText>{tex`f_m^\star`}</MathText> minimizes the modality loss. <MathText>{tex`O(k)`}</MathText> is the set of distance-preserving linear maps, including reflections. One <MathText>{tex`Q_m`}</MathText> works for every state.</p>
@@ -117,25 +117,51 @@ const slides = [
       </section>
     </div><div className="math-panel compact"><MathText block>{tex`\mathcal L_m(f)=\mathbb E_{(z,z')\sim\pi_m}\!\left[\ell\!\left(f(g_m(z)),f(g_m(z'))\right)\right]+\Omega(f)`}</MathText></div>
     <Source href={JEPA + '#page=3'}>Section 2.1 · Equation 1 and Theorem 1</Source></>},
-  {hash:'slide-4', topic:'Sections 2.1–2.3', title:'When positives define the geometry',
+  {hash:'proposition-1', topic:'Proposition 1 · Section 2.1', title:'From eigenvectors to scene embeddings',
+    lead:'Each eigenvector assigns one number to every state. Read the same state’s entry from k eigenvectors to construct its k-dimensional embedding.',
+    body: () => <><div className="theory-grid">
+      <section className="point theorem"><h2>1. A matrix indexed by states</h2>
+        <p>With 1,000 world states, the normalized pair graph is a <MathText>{tex`1000\times1000`}</MathText> matrix. Rows and columns both identify states.</p>
+        <MathText block>{tex`(K_\pi)_{zz'}=\frac{\pi(z,z')}{\sqrt{p(z)p(z')}}`}</MathText>
+        <p>The numerator is the joint probability of drawing the two states as a positive pair.</p>
+      </section>
+      <section className="point theorem"><h2>2. An eigenvector has 1,000 entries</h2>
+        <MathText block>{tex`K_\pi v_i=\mu_i v_i,\qquad v_i\in\mathbb R^{1000}`}</MathText>
+        <p><MathText>{tex`v_i(z)`}</MathText> is a single number: eigenvector <MathText>i</MathText>’s entry for state <MathText>z</MathText>. <MathText>{tex`\mu_i`}</MathText>, pronounced “mu,” is its eigenvalue.</p>
+        <p>One eigenvector supplies one coordinate across all states. Its length is the number of states, even if the final embedding has only three dimensions.</p>
+      </section>
+      <section className="point theorem"><h2>3. One state gets k coordinates</h2>
+        <MathText block>{tex`\Phi_\pi(z)=\frac{(v_1(z),\ldots,v_k(z))^\top}{\sqrt{p(z)}}`}</MathText>
+        <p>Use the top <MathText>k</MathText> nonconstant eigenvectors and scale each state’s row by <MathText>{tex`1/\sqrt{p(z)}`}</MathText>. The resulting coordinates satisfy the whitening constraint.</p>
+        <p>For three dimensions, read three entries from the same row:</p>
+      </section>
+    </div>
+    <Table columns={['State', 'Eigenvector 1', 'Eigenvector 2', 'Eigenvector 3', 'Embedding']} rows={[
+      ['State 1', <MathText>{tex`v_1(1)`}</MathText>, <MathText>{tex`v_2(1)`}</MathText>, <MathText>{tex`v_3(1)`}</MathText>, <MathText>{tex`\Phi_\pi(1)`}</MathText>],
+      ['State 42', <MathText>{tex`v_1(42)`}</MathText>, <MathText>{tex`v_2(42)`}</MathText>, <MathText>{tex`v_3(42)`}</MathText>, <MathText>{tex`\frac{(v_1(42),v_2(42),v_3(42))^\top}{\sqrt{p(42)}}`}</MathText>],
+      ['State 1,000', <MathText>{tex`v_1(1000)`}</MathText>, <MathText>{tex`v_2(1000)`}</MathText>, <MathText>{tex`v_3(1000)`}</MathText>, <MathText>{tex`\Phi_\pi(1000)`}</MathText>],
+    ]}/>
+    <p className="note"><strong>Proposition 1.</strong> For squared-distance loss with whitening, a gap <MathText>{tex`\mu_k>\mu_{k+1}`}</MathText> makes every population optimum a rotation or reflection of this embedding. Training can reach it by minimizing the loss. In feature-covariance PCA, eigenvectors instead have one entry per original feature.</p>
+    <Source href={JEPA + '#page=3'}>Proposition 1 · Spectral JEPAs Are Unique Up to Rotation</Source></>},
+  {hash:'slide-4', topic:'Proposition 1 · Theorems 2–4 · Proposition 3', title:'When positives define the geometry',
     lead:'The spectral case proves uniqueness under an eigengap and shows how pair mismatch and observation-specific detail affect alignment.',
     body: ({zoom}) => <><div className="theory-grid">
-      <section className="point theorem"><h2>Whitened spectral solution</h2>
+      <section className="point theorem"><h2>Proposition 1 · Spectral solution</h2>
         <p><strong>Normalize the pair graph.</strong> <MathText>{tex`\Pi_{zz'}=\pi(z,z')`}</MathText> records how often states are sampled together. Use the state probabilities in <MathText>{tex`D=\operatorname{diag}(p)`}</MathText> to form <MathText>{tex`K_\pi=D^{-1/2}\Pi D^{-1/2}`}</MathText>.</p>
         <p><strong>Whiten the embeddings.</strong> Require <MathText>{tex`\mathbb E_p h=0,\ \mathbb E_p[hh^\top]=I_k`}</MathText>. The embedding coordinates have zero mean, unit variance, and zero covariance with each other.</p>
         <p><strong>Find the smoothest coordinates.</strong> The squared-distance loss picks the top <MathText>k</MathText> nonconstant eigenvectors of <MathText>{tex`K_\pi`}</MathText>, with each state’s coordinates scaled by <MathText>{tex`1/\sqrt{p(z)}`}</MathText>. A gap <MathText>{tex`\mu_k>\mu_{k+1}`}</MathText> makes the selected subspace unique.</p>
       </section>
-      <section className="point theorem"><h2>Different pair laws</h2>
+      <section className="point theorem"><h2>Theorem 2 · Pair mismatch</h2>
         <p>With the same state marginal <MathText>p</MathText>, Theorem 2 bounds the root-mean-square error after the best orthogonal map by a kernel difference divided by the reference eigengap <MathText>{tex`\delta=\mu_k-\mu_{k+1}`}</MathText>.</p>
         <p><strong>Reading the bound.</strong> The kernels encode which states are linked and how often. A small gap makes their leading subspaces sensitive to changes in those links. Self-pairs alone give an identity kernel, so there is no unique choice of leading subspace when the cutoff ties.</p>
       </section>
-      <section className="point theorem"><h2>Multiple observations per state</h2>
+      <section className="point theorem"><h2>Theorem 3 · Nuisance costs alignment</h2>
         <p>Section 2.3 writes <MathText>{tex`x=g_m(z,\nu)`}</MathText>, with <MathText>{tex`\nu`}</MathText> a modality-specific detail such as wording. Good views draw observations of related states with independent nuisances. Corrupting one observation twice can retain its nuisance.</p>
-        <p>If <MathText>r</MathText> whitened directions encode only private nuisance, the best rotation leaves at least <MathText>2r</MathText> expected squared error under the paper’s independence assumptions.</p><p><strong>Theorem 4.</strong> The view policy and the data together induce the pair graph on states. Alignment depends on both graph disagreement and how much the observations mix state and nuisance.</p>
+        <p><strong>Proposition 3 · Good and bad views.</strong> Under its spectral conditions, good views ignore nuisance. If <MathText>r</MathText> whitened directions encode only private nuisance, the best rotation leaves at least <MathText>2r</MathText> expected squared error under the paper’s independence assumptions.</p><p><strong>Theorem 4 · Views and data.</strong> The view policy and the data together induce the pair graph on states. Alignment depends on both graph disagreement and how much the observations mix state and nuisance.</p>
       </section>
     </div><Figure id="pairs" zoom={zoom} className="theory-figure"/>
     <Source href={JEPA + '#page=4'}>Spectral proposition and Theorems 2–4</Source></>},
-  {hash:'slide-5', topic:'Section 2.4', title:'Next-token prediction as a JEPA', lead:'A language model learns which tokens fit a prefix. What does that tell it about the geometry of scenes?',
+  {hash:'slide-5', topic:'Proposition 4 · Section 2.4', title:'Next-token prediction as a JEPA', lead:'A language model learns which tokens fit a prefix. What does that tell it about the geometry of scenes?',
     body: () => <>
       <div className="theory-grid">
         <Point title="Find the positive pair">The prefix <MathText>c</MathText> and its actual next token <MathText>y</MathText> form the pair. The softmax compares the prefix embedding <MathText>{tex`h(c)`}</MathText> with the target token vector <MathText>{tex`w_y`}</MathText> and the rest of the vocabulary.</Point>
@@ -167,7 +193,7 @@ const slides = [
       <div className="split">
         <Point title="Train a decoder in text space">A frozen text JEPA encodes captions. The decoder learns to reconstruct text from these embeddings. Gaussian noise during training makes it more tolerant of errors in mapped image embeddings.</Point>
         <Point title="Fit just the map on paired data">The strongest configuration maps frozen DINOv2 and DINOv3 features into text space. Fit the map with orthonormal rows on about 30,000 Flickr pairs. The captioner reaches <strong>0.838 CIDEr</strong> on COCO.</Point>
-      </div><Source href={JEPA + '#page=13'}>Section 5.1 · Captioning</Source>
+      </div><p className="note"><strong>Proposition 2 · Identify the rotation.</strong> With exact shared k-dimensional geometry, k paired embeddings spanning the space determine the orthogonal map. The captioner uses many more pairs and unequal embedding widths, beyond that idealized guarantee.</p><Source href={JEPA + '#page=4'}>Proposition 2 · k Pairs Identify the Rotation</Source>{' · '}<Source href={JEPA + '#page=13'}>Section 5.1 · Captioning</Source>
     </>},
   {hash:'slide-8', topic:'Section 5.2 · Related work', title:'Shared geometry as a Rosetta Stone',
     lead:'Schnaus et al. recover a map between existing encoders. Balestriero and LeCun ask which training views make that map easier to recover.',

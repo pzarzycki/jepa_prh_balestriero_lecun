@@ -194,14 +194,15 @@ const slides = [
       <Point title="What the scaling law predicts">Fit Flickr R@1 as a function of good-view fraction, training draws, and unique images. Across 85 new runs, RMSE is 0.0093 versus 0.0096 between seeds. Some much longer runs fall below forecast.</Point>
       <Source href={JEPA + '#page=15'}>Discussion and limitations</Source>
     </div><Figure id="law" zoom={zoom}/></div>},
-  {hash:'slide-10', topic:'FER comparison', title:'Same skull, different training paths', lead:'Kumar, Clune, Lehman, and Stanley compare how an evolved network and a direct gradient fit produce nearly the same image.',
+  {hash:'slide-10', topic:'FER comparison', title:'Shared geometry and internal computation', lead:'The JEPA paper asks whether encoders agree on which examples are similar. The FER paper asks whether a model reuses computations and keeps independent factors separately controllable.',
     body: ({zoom}) => <><div className="split fer"><Figure id="sweeps" zoom={zoom}/><div>
-      <Point title="Two training histories">Picbreeder builds on inherited patterns, including bilateral symmetry. The direct fit starts from randomized weights in the same layered template and minimizes pixel error to the final skull.</Point>
-      <Point title="Fracture and entanglement">Fracture means separate computations repeat the same operation across contexts. Entanglement means changing one factor also affects others. Selected evolved weight sweeps give more coherent edits. The comparison varies several training choices together.</Point>
-      <Point title="Compatible with the JEPA theorem">Two encoders can share all distances while individual coordinates mix factors. Circuit reuse and selective control require separate measurements.</Point>
+      <Point title="What FER means">Fracture is duplicated logic across contexts, such as constructing each side of a symmetric skull separately. Entanglement is coupled behavior, such as moving the jaw and unintentionally distorting the eye. The ideal is one reusable computation per factor, with independent control.</Point>
+      <Point title="What the skull experiment shows">Two networks map pixel coordinates to nearly identical skull images. Their hidden activation maps and responses to weight changes differ. Selected evolved weight sweeps give more coherent edits. The training paths differ in several ways.</Point>
+      <Point title="What the JEPA theorem establishes">Under its assumptions, one rotation or reflection maps the embeddings of one encoder to those of the other, preserving all pairwise distances. That leaves the choice of axes open. Reuse and selective control are properties of how the model computes, which the alignment test does not measure.</Point>
     </div></div>
-    <div className="math-panel compact"><MathText block>{tex`h=(s_1,s_2)^\top,\qquad h^\prime=\tfrac{1}{\sqrt{2}}(s_1+s_2,\ s_2-s_1)^\top`}</MathText><p>The orthogonal map preserves distances and mixes both factors in each coordinate.</p></div>
-    <Source href={FER + '#page=17'}>Training paths and interpretation</Source></>},
+    <div className="math-panel compact"><MathText block>{tex`h=(s_1,s_2)^\top,\qquad h^\prime=\tfrac{1}{\sqrt{2}}(s_1+s_2,\ s_2-s_1)^\top`}</MathText><p>Illustration. A 45° change of axes mixes the two factors in each coordinate and preserves every pairwise distance. Rotating back recovers both factors. This example shows basis dependence.</p></div>
+    <Source href={FER}>Kumar, Clune, Lehman &amp; Stanley · Questioning Representational Optimism in Deep Learning: The Fractured Entangled Representation Hypothesis · arXiv:2505.11581v2</Source><br/>
+    <Source href={JEPA + '#page=3'}>Balestriero &amp; LeCun · Platonic Representation Theorem, §2.1</Source></>},
 ];
 
 function indexFromHash() {

@@ -143,24 +143,49 @@ const slides = [
     ]}/>
     <p className="note"><strong>Proposition 1.</strong> For squared-distance loss with whitening, a gap <MathText>{tex`\mu_k>\mu_{k+1}`}</MathText> makes every population optimum a rotation or reflection of this embedding. Training can reach it by minimizing the loss. In feature-covariance PCA, eigenvectors instead have one entry per original feature.</p>
     <Source href={JEPA + '#page=3'}>Proposition 1 · Spectral JEPAs Are Unique Up to Rotation</Source></>},
-  {hash:'slide-4', topic:'Proposition 1 · Theorems 2–4 · Proposition 3', title:'When positives define the geometry',
-    lead:'The spectral case proves uniqueness under an eigengap and shows how pair mismatch and observation-specific detail affect alignment.',
+  {hash:'slide-4', topic:'Proposition 1 · Theorem 2 · Proposition 2', title:'Shared geometry and how to align it',
+    lead:'The pair graph determines the geometry. Graph disagreement limits alignment. Matched examples reveal the rotation between two otherwise compatible spaces.',
+    body: () => <><div className="theory-grid">
+      <section className="point theorem"><h2>Proposition 1 · Which geometry is learned?</h2>
+        <p><strong>Normalize the graph.</strong> The pair probabilities <MathText>{tex`\Pi_{zz'}=\pi(z,z')`}</MathText> and state frequencies <MathText>{tex`D=\operatorname{diag}(p)`}</MathText> give <MathText>{tex`K_\pi=D^{-1/2}\Pi D^{-1/2}`}</MathText>.</p>
+        <p><strong>Whiten the embeddings.</strong> Coordinates have zero mean, unit variance, and zero covariance. This constrains the learned vectors.</p>
+        <p>The squared-distance loss selects the top <MathText>k</MathText> nonconstant eigenvectors, scaled by <MathText>{tex`1/\sqrt{p(z)}`}</MathText>. A gap <MathText>{tex`\delta=\mu_k-\mu_{k+1}>0`}</MathText> fixes the subspace. Its axes can rotate or reflect.</p>
+      </section>
+      <section className="point theorem"><h2>Theorem 2 · What if the graphs differ?</h2>
+        <p>Two modalities can pair the same states differently. With the same state frequencies, the theorem bounds the remaining root-mean-square error after the best rotation.</p>
+        <p><strong>Reading the bound.</strong> A larger difference between normalized pair graphs loosens the error bound. A larger reference eigengap tightens it. Near a tie at the cutoff, a small graph change can select a different subspace.</p>
+        <p>If every state pairs only with itself, <MathText>{tex`K_\pi=I`}</MathText>. All nonconstant modes tie, so a cutoff within them cannot select a unique subspace.</p>
+      </section>
+      <section className="point theorem"><h2>Proposition 2 · How do we find the rotation?</h2>
+        <p>A rotation preserves zero mean and identity covariance. Comparing those two statistics of unpaired embeddings cannot reveal their relative orientation.</p>
+        <MathText block>{tex`\min_{Q\in O(k)}\sum_i\|a_i-Qb_i\|^2`}</MathText>
+        <p>Here <MathText>{tex`a_i,b_i`}</MathText> encode the same state in different modalities. Fit one rotation or reflection to bring these matched vectors together. This is orthogonal Procrustes.</p>
+        <p><strong>Exact guarantee.</strong> When the geometries agree exactly, <MathText>k</MathText> matched pairs whose vectors span the space uniquely determine the map. In 2D, two independent vectors suffice.</p>
+      </section>
+    </div>
+    <p className="note">Proposition 2 uses cross-modal correspondences after training. Positive pairs used to train each encoder can stay within its own modality. Higher-order structure can sometimes reveal orientation without correspondences.</p>
+    <Source href={JEPA + '#page=3'}>Proposition 1 · §2.1</Source>{' · '}<Source href={JEPA + '#page=4'}>Theorem 2 and Proposition 2 · §2.2</Source></>},
+  {hash:'views-and-nuisance', topic:'Theorem 3 · Proposition 3 · Theorem 4', title:'What views preserve, and why it matters',
+    lead:'An observation contains shared scene information and private details. View construction and the available data determine which of these survive in the learned geometry.',
     body: ({zoom}) => <><div className="theory-grid">
-      <section className="point theorem"><h2>Proposition 1 · Spectral solution</h2>
-        <p><strong>Normalize the pair graph.</strong> <MathText>{tex`\Pi_{zz'}=\pi(z,z')`}</MathText> records how often states are sampled together. Use the state probabilities in <MathText>{tex`D=\operatorname{diag}(p)`}</MathText> to form <MathText>{tex`K_\pi=D^{-1/2}\Pi D^{-1/2}`}</MathText>.</p>
-        <p><strong>Whiten the embeddings.</strong> Require <MathText>{tex`\mathbb E_p h=0,\ \mathbb E_p[hh^\top]=I_k`}</MathText>. The embedding coordinates have zero mean, unit variance, and zero covariance with each other.</p>
-        <p><strong>Find the smoothest coordinates.</strong> The squared-distance loss picks the top <MathText>k</MathText> nonconstant eigenvectors of <MathText>{tex`K_\pi`}</MathText>, with each state’s coordinates scaled by <MathText>{tex`1/\sqrt{p(z)}`}</MathText>. A gap <MathText>{tex`\mu_k>\mu_{k+1}`}</MathText> makes the selected subspace unique.</p>
+      <section className="point theorem"><h2>Theorem 3 · Private detail limits alignment</h2>
+        <p>Write <MathText>{tex`x=g_m(z,\nu)`}</MathText>. The state <MathText>z</MathText> is shared. The nuisance <MathText>{tex`\nu`}</MathText> is private to the observation, such as a caption’s exact wording.</p>
+        <p>For centered, whitened encoders and independent nuisances across modalities, private variation creates an error that even the best rotation cannot remove.</p>
+        <p><strong>Nuisance can be useful.</strong> Camera viewpoint matters for navigation. Its cost here concerns agreement with a caption that carries no corresponding viewpoint information.</p>
       </section>
-      <section className="point theorem"><h2>Theorem 2 · Pair mismatch</h2>
-        <p>With the same state marginal <MathText>p</MathText>, Theorem 2 bounds the root-mean-square error after the best orthogonal map by a kernel difference divided by the reference eigengap <MathText>{tex`\delta=\mu_k-\mu_{k+1}`}</MathText>.</p>
-        <p><strong>Reading the bound.</strong> The kernels encode which states are linked and how often. A small gap makes their leading subspaces sensitive to changes in those links. Self-pairs alone give an identity kernel, so there is no unique choice of leading subspace when the cutoff ties.</p>
+      <section className="point theorem"><h2>Proposition 3 · Which views keep nuisance?</h2>
+        <p><strong>Good views.</strong> Independently sampled observations of related states vary their private details. With the required spectral separation, the optimum depends only on the state.</p>
+        <p><strong>Bad views.</strong> Two corruptions of one observation can preserve wording, viewpoint, or lighting. Nuisance enters the embedding when its strongest retained correlation exceeds that of the last retained state direction.</p>
+        <p>If <MathText>r</MathText> whitened dimensions encode pure private nuisance, expected squared alignment error is at least <MathText>2r</MathText>, under the independence assumptions.</p>
       </section>
-      <section className="point theorem"><h2>Theorem 3 · Nuisance costs alignment</h2>
-        <p>Section 2.3 writes <MathText>{tex`x=g_m(z,\nu)`}</MathText>, with <MathText>{tex`\nu`}</MathText> a modality-specific detail such as wording. Good views draw observations of related states with independent nuisances. Corrupting one observation twice can retain its nuisance.</p>
-        <p><strong>Proposition 3 · Good and bad views.</strong> Under its spectral conditions, good views ignore nuisance. If <MathText>r</MathText> whitened directions encode only private nuisance, the best rotation leaves at least <MathText>2r</MathText> expected squared error under the paper’s independence assumptions.</p><p><strong>Theorem 4 · Views and data.</strong> The view policy and the data together induce the pair graph on states. Alignment depends on both graph disagreement and how much the observations mix state and nuisance.</p>
+      <section className="point theorem"><h2>Theorem 4 · Views and data set the graph</h2>
+        <p>The view sampler and available observations jointly determine which world states get connected. Even the same masking rule can induce different graphs on different datasets.</p>
+        <MathText block>{tex`|E_{\rm align}-d|\leq\tau_1+\tau_2`}</MathText>
+        <p><MathText>d</MathText> is the distance between the induced graphs’ spectral embeddings after the best rotation. <MathText>{tex`E_{\rm align}`}</MathText> is the encoders’ root-mean-square alignment error.</p>
+        <p>Under spectral separation, corrections <MathText>{tex`\tau_m`}</MathText> account for mixing state with nuisance. Good views give the intended state kernel and <MathText>{tex`\tau_m=0`}</MathText>.</p>
       </section>
     </div><Figure id="pairs" zoom={zoom} className="theory-figure"/>
-    <Source href={JEPA + '#page=4'}>Spectral proposition and Theorems 2–4</Source></>},
+    <Source href={JEPA + '#page=4'}>Theorem 3 and Proposition 3 · §2.3</Source>{' · '}<Source href={JEPA + '#page=5'}>Theorem 4 · Views and Data Set the World Kernel</Source></>},
   {hash:'slide-5', topic:'Proposition 4 · Section 2.4', title:'Next-token prediction as a JEPA', lead:'A language model learns which tokens fit a prefix. What does that tell it about the geometry of scenes?',
     body: () => <>
       <div className="theory-grid">

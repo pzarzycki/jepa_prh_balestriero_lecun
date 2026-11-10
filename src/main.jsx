@@ -121,8 +121,9 @@ const slides = [
     lead:'The spectral case proves uniqueness under an eigengap and shows how pair mismatch and observation-specific detail affect alignment.',
     body: ({zoom}) => <><div className="theory-grid">
       <section className="point theorem"><h2>Whitened spectral solution</h2>
-        <p><MathText>{tex`\Pi_{zz'}=\pi(z,z')`}</MathText> is the weighted pair graph. <MathText>{tex`D=\operatorname{diag}(p)`}</MathText> contains state probabilities. Normalize with <MathText>{tex`K_\pi=D^{-1/2}\Pi D^{-1/2}`}</MathText>.</p>
-        <p>Squared-distance loss with <MathText>{tex`\mathbb E_p h=0,\ \mathbb E_p[hh^\top]=I_k`}</MathText> selects the top <MathText>k</MathText> nonconstant eigenvectors. If <MathText>{tex`\mu_k>\mu_{k+1}`}</MathText>, the selected subspace is unique. Here <MathText>{tex`\mu_i`}</MathText> are eigenvalues ordered largest first, with <MathText>{tex`\mu_0=1`}</MathText> for the constant mode.</p>
+        <p><strong>Normalize the pair graph.</strong> <MathText>{tex`\Pi_{zz'}=\pi(z,z')`}</MathText> records how often states are sampled together. Use the state probabilities in <MathText>{tex`D=\operatorname{diag}(p)`}</MathText> to form <MathText>{tex`K_\pi=D^{-1/2}\Pi D^{-1/2}`}</MathText>.</p>
+        <p><strong>Whiten the embeddings.</strong> Require <MathText>{tex`\mathbb E_p h=0,\ \mathbb E_p[hh^\top]=I_k`}</MathText>. The embedding coordinates have zero mean, unit variance, and zero covariance with each other.</p>
+        <p><strong>Find the smoothest coordinates.</strong> The squared-distance loss picks the top <MathText>k</MathText> nonconstant eigenvectors of <MathText>{tex`K_\pi`}</MathText>, with each state’s coordinates scaled by <MathText>{tex`1/\sqrt{p(z)}`}</MathText>. A gap <MathText>{tex`\mu_k>\mu_{k+1}`}</MathText> makes the selected subspace unique.</p>
       </section>
       <section className="point theorem"><h2>Different pair laws</h2>
         <p>With the same state marginal <MathText>p</MathText>, Theorem 2 bounds the root-mean-square error after the best orthogonal map by a kernel difference divided by the reference eigengap <MathText>{tex`\delta=\mu_k-\mu_{k+1}`}</MathText>.</p>

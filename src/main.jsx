@@ -152,11 +152,13 @@ const slides = [
         <p>The squared-distance loss selects the top <MathText>k</MathText> nonconstant eigenvectors, scaled by <MathText>{tex`1/\sqrt{p(z)}`}</MathText>. A gap <MathText>{tex`\delta=\mu_k-\mu_{k+1}>0`}</MathText> fixes the subspace. Its axes can rotate or reflect.</p>
       </section>
       <section className="point theorem"><h2>Theorem 2 · Kernel mismatch bounds misalignment</h2>
-        <p>For spectral embeddings with the same state frequencies, define the remaining root-mean-square error after the best rotation:</p>
+        <p><strong>What changes from Theorem 1?</strong> Theorem 1 requires <MathText>{tex`\pi_1=\pi_2`}</MathText>. Theorem 2 allows different pair distributions while each state occurs equally often in both modalities:</p>
+        <MathText block>{tex`\sum_{z'}\pi_1(z,z')=\sum_{z'}\pi_2(z,z')=p(z)`}</MathText>
+        <p><strong>Same state frequencies, different partners.</strong> A state can be paired with different states, or at different rates. The remaining root-mean-square error after the best rotation is</p>
         <MathText block>{tex`E_\Phi=\min_{Q\in O(k)}\left(\mathbb E_p\|\Phi_1(z)-Q\Phi_2(z)\|^2\right)^{1/2}`}</MathText>
         <MathText block>{tex`\begin{gathered}E_\Phi\leq\frac{2\sqrt{2}}{\delta}\min\!\left(\sqrt{k}\|\Delta K\|_2,\|\Delta K\|_F\right),\\ \Delta K=K_{\pi_1}-K_{\pi_2},\quad\delta=\mu_k-\mu_{k+1}>0.\end{gathered}`}</MathText>
-        <p><strong>An upper bound.</strong> Graph disagreement sets a ceiling on alignment error, scaled by the inverse eigengap. A larger gap tightens the bound. Near a tie, small graph changes can select different subspaces.</p>
-        <p><MathText>k</MathText> is the embedding dimension. <MathText>{tex`\|\cdot\|_2`}</MathText> is the operator norm, the largest stretching factor. <MathText>{tex`\|\cdot\|_F`}</MathText> is the square root of the sum of squared matrix entries. The gap is that of <MathText>{tex`K_{\pi_2}`}</MathText>.</p>
+        <p><strong>An upper bound.</strong> The difference between the pair graphs bounds the error after alignment. A larger eigengap tightens this bound; near a tie, small graph changes can select different subspaces.</p>
+        <p><MathText>{tex`\Delta K`}</MathText> measures the changed pairing rule. <MathText>k</MathText> is the embedding dimension. <MathText>{tex`\|\cdot\|_2`}</MathText> is the operator norm, the largest stretching factor. <MathText>{tex`\|\cdot\|_F`}</MathText> is the square root of the sum of squared matrix entries. The gap is that of <MathText>{tex`K_{\pi_2}`}</MathText>.</p>
       </section>
       <section className="point theorem"><h2>Proposition 2 · How do we find the rotation?</h2>
         <p>A rotation preserves zero mean and identity covariance. Comparing those two statistics of unpaired embeddings cannot reveal their relative orientation.</p>

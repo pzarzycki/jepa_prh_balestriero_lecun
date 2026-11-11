@@ -151,10 +151,12 @@ const slides = [
         <p><strong>Whiten the embeddings.</strong> Coordinates have zero mean, unit variance, and zero covariance. This constrains the learned vectors.</p>
         <p>The squared-distance loss selects the top <MathText>k</MathText> nonconstant eigenvectors, scaled by <MathText>{tex`1/\sqrt{p(z)}`}</MathText>. A gap <MathText>{tex`\delta=\mu_k-\mu_{k+1}>0`}</MathText> fixes the subspace. Its axes can rotate or reflect.</p>
       </section>
-      <section className="point theorem"><h2>Theorem 2 · What if the graphs differ?</h2>
-        <p>Two modalities can pair the same states differently. With the same state frequencies, the theorem bounds the remaining root-mean-square error after the best rotation.</p>
-        <p><strong>Reading the bound.</strong> A larger difference between normalized pair graphs loosens the error bound. A larger reference eigengap tightens it. Near a tie at the cutoff, a small graph change can select a different subspace.</p>
-        <p>If every state pairs only with itself, <MathText>{tex`K_\pi=I`}</MathText>. All nonconstant modes tie, so a cutoff within them cannot select a unique subspace.</p>
+      <section className="point theorem"><h2>Theorem 2 · Kernel mismatch bounds misalignment</h2>
+        <p>For spectral embeddings with the same state frequencies, define the remaining root-mean-square error after the best rotation:</p>
+        <MathText block>{tex`E_\Phi=\min_{Q\in O(k)}\left(\mathbb E_p\|\Phi_1(z)-Q\Phi_2(z)\|^2\right)^{1/2}`}</MathText>
+        <MathText block>{tex`\begin{gathered}E_\Phi\leq\frac{2\sqrt{2}}{\delta}\min\!\left(\sqrt{k}\|\Delta K\|_2,\|\Delta K\|_F\right),\\ \Delta K=K_{\pi_1}-K_{\pi_2},\quad\delta=\mu_k-\mu_{k+1}>0.\end{gathered}`}</MathText>
+        <p><strong>An upper bound.</strong> Graph disagreement sets a ceiling on alignment error, scaled by the inverse eigengap. A larger gap tightens the bound. Near a tie, small graph changes can select different subspaces.</p>
+        <p><MathText>k</MathText> is the embedding dimension. <MathText>{tex`\|\cdot\|_2`}</MathText> is the operator norm, the largest stretching factor. <MathText>{tex`\|\cdot\|_F`}</MathText> is the square root of the sum of squared matrix entries. The gap is that of <MathText>{tex`K_{\pi_2}`}</MathText>.</p>
       </section>
       <section className="point theorem"><h2>Proposition 2 · How do we find the rotation?</h2>
         <p>A rotation preserves zero mean and identity covariance. Comparing those two statistics of unpaired embeddings cannot reveal their relative orientation.</p>
@@ -168,10 +170,12 @@ const slides = [
   {hash:'views-and-nuisance', topic:'Theorem 3 · Proposition 3 · Theorem 4', title:'What views preserve, and why it matters',
     lead:'An observation contains shared scene information and private details. View construction and the available data determine which of these survive in the learned geometry.',
     body: ({zoom}) => <><div className="theory-grid">
-      <section className="point theorem"><h2>Theorem 3 · Private detail limits alignment</h2>
-        <p>Write <MathText>{tex`x=g_m(z,\nu)`}</MathText>. The state <MathText>z</MathText> is shared. The nuisance <MathText>{tex`\nu`}</MathText> is private to the observation, such as a caption’s exact wording.</p>
-        <p>For centered, whitened encoders and independent nuisances across modalities, private variation creates an error that even the best rotation cannot remove.</p>
-        <p><strong>Nuisance can be useful.</strong> Camera viewpoint matters for navigation. Its cost here concerns agreement with a caption that carries no corresponding viewpoint information.</p>
+      <section className="point theorem"><h2>Theorem 3 · Nuisance costs alignment</h2>
+        <p>Write <MathText>{tex`x=g_m(z,\nu)`}</MathText>, with shared state <MathText>z</MathText> and private nuisance <MathText>{tex`\nu`}</MathText>. For centered, whitened encoders of paired observations with independent nuisances:</p>
+        <MathText block>{tex`\begin{gathered}\min_{Q\in O(k)}\mathbb E\|Qf_1(x_1)-f_2(x_2)\|^2\\ \geq 2k\left(1-\min_m\rho(f_m)\right).\end{gathered}`}</MathText>
+        <MathText block>{tex`\rho(f)=\frac{\operatorname{tr}(C_f^{1/2})}{k},\quad C_f=\operatorname{Cov}(\mathbb E[f(x)\mid z])`}</MathText>
+        <p><strong>A lower bound.</strong> The smaller scene-explained fraction <MathText>{tex`\rho\in[0,1]`}</MathText> sets an unavoidable floor on expected squared error. <MathText>{tex`\rho=1`}</MathText> exactly when the embedding depends only on the state. Zero floor alone does not guarantee alignment.</p>
+        <p><strong>Nuisance can be useful.</strong> Viewpoint matters for navigation. The cost here concerns alignment with another modality that cannot match that private detail.</p>
       </section>
       <section className="point theorem"><h2>Proposition 3 · Which views keep nuisance?</h2>
         <p><strong>Good views.</strong> Independently sampled observations of related states vary their private details. With the required spectral separation, the optimum depends only on the state.</p>
